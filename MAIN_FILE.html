@@ -19,8 +19,9 @@
     <script>
       var map = L.map("map", {
         center: [39.3999, -8.2245],
-        zoom: 6,
-        minZoom: 6, // Set maximum zoom level
+        zoom: 10,
+        minZoom: 10,
+        maxZoom: 18, // Set maximum zoom level
       });
 
       L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
@@ -34,18 +35,16 @@
       )
         .then((response) => response.json())
         .then((data) => {
-          // Get Portugal boundaries geometry
           var portugalBoundary = L.geoJSON(data).getBounds();
           console.log("Portugal Boundaries:", portugalBoundary);
-          // Generate random points within the bounds of Portugal
 
           // Read the JSON file containing point data
           fetch("dummy_data.json")
             .then((response) => response.json())
             .then((points) => {
               points.forEach((point) => {
-                // Check if the property 'for_salve' is true
-                if (point.for_salve === true) {
+                // Check if the property 'for_sale' is true
+                if (point.for_sale === true) {
                   var lat = point.lat;
                   var lng = point.lng;
                   var price = point.price;
@@ -56,16 +55,13 @@
                   // Convert hue to RGB color
                   var color = "hsl(" + hue + ", 100%, 50%)";
 
-                  var radius = 1; // Default radius
-                  if (map.getZoom()) {
-                    radius = (map.getZoom() / 3);
-                  }
+                  var radius = 15; // Default radius calculation
 
                   // Plot the point on the map with the calculated color
                   L.circleMarker([lat, lng], {
                     radius: radius,
                     fillColor: color,
-                    fillOpacity: 0.5, // Adjust transparency here
+                    fillOpacity: 0.8, // Adjust transparency here
                     color: "none",
                     weight: 0,
                   }).addTo(map);
@@ -78,8 +74,7 @@
       map.on("zoomend", function () {
         map.eachLayer(function (layer) {
           if (layer instanceof L.CircleMarker) {
-            console.log(map.getZoom());
-            var radius = (map.getZoom() / 2);
+            var radius = map.getZoom() / 1;
             layer.setRadius(radius);
           }
         });
